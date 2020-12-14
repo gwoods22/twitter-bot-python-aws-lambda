@@ -1,27 +1,6 @@
 import os
-import random
-import json
-from pathlib import Path
 import tweepy
-import csv
-
-ROOT = Path(__file__).resolve().parents[0]
-
-
-def get_tweet(tweets_file, excluded_tweets=None):
-    """Get tweet to post from CSV file"""
-
-    with open(tweets_file) as csvfile:
-        reader = csv.DictReader(csvfile)
-        possible_tweets = [row["tweet"] for row in reader]
-
-    if excluded_tweets:
-        recent_tweets = [status_object.text for status_object in excluded_tweets]
-        possible_tweets = [tweet for tweet in possible_tweets if tweet not in recent_tweets]
-
-    selected_tweet = random.choice(possible_tweets)
-
-    return selected_tweet
+import re
 
 
 def lambda_handler(event, context):
@@ -36,10 +15,11 @@ def lambda_handler(event, context):
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth)
 
-    print("Get tweet from csv file")
-    tweets_file = ROOT / "tweets.csv"
-    recent_tweets = api.user_timeline()[:3]
-    tweet = get_tweet(tweets_file)
+    print("Get last tweet to increment day")
+    last_tweet = api.user_timeline()[0].text
+    num = int(re.search("\d+", last_tweet).group()) + 1
+    
+    tweet = f"Day {num} of asking @Casey to post a DJI Mini 2 Tech Tuesday"
 
     print(f"Post tweet: {tweet}")
     api.update_status(tweet)
