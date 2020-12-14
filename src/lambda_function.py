@@ -16,14 +16,14 @@ def lambda_handler(event, context):
     api = tweepy.API(auth)
 
     print("Get last tweet to increment day")
-    last_tweet = api.user_timeline()
-    if len(last_tweet) > 0:
-        num = int(re.search("\d+", last_tweet[0].text).group()) + 1
+    tweets = api.user_timeline()
+    if len(tweets) > 0:
+        num = int(re.search("\d+", tweets[0].text).group()) + 1
     else:
         num = 1
     tweet = f"Day {num} of asking @Casey to post a DJI Mini 2 Tech Tuesday"
 
     print(f"Post tweet: {tweet}")
-    # api.update_status(tweet)
+    api.update_status(tweet)
 
     return {"statusCode": 200, "tweet": tweet}
