@@ -2,6 +2,16 @@ import os
 import tweepy
 import re
 
+def suffix(number):
+    last_digit = int(str(number)[-1:])
+    if last_digit == 1:
+        return "st"
+    elif last_digit == 2:
+        return "nd"
+    elif last_digit == 3:
+        return "rd"
+    else:
+        return "th"
 
 def lambda_handler(event, context):
     print("Get credentials")
@@ -18,17 +28,18 @@ def lambda_handler(event, context):
     print("Get last tweet to increment day")
     tweets = api.user_timeline()
     if len(tweets) > 0:
-        day = int(re.search("\d+", tweets[0].text).group()) + 1
+        count = int(re.search("\d+", tweets[0].text).group()) + 1
     else:
-        day = 1
-    tweet = f"Day {day} of asking @Casey to post a DJI Mini 2 Tech Tuesday"
+        count = 1
+
+    tweet = f"Asking @DavidDobrik to post a vlog for the {count}{suffix(count)} time."
 
     print(f"Post tweet: {tweet}")
     api.update_status(tweet)
 
     print("Update bio")
     api.update_profile(
-        description = f'Day {day} of tweeting @Casey until he posts a DJI Mini 2 review\n\nMade by @woodzy222'
+        description = f'Tweeting @DavidDobrik every hour until he posts a vlog.\n{count} tweets so far.\n\nMade by @woodzy222'
     )
 
     return {"statusCode": 200, "tweet": tweet}
