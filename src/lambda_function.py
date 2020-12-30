@@ -3,8 +3,11 @@ import tweepy
 import re
 
 def suffix(number):
+    last_two = int(str(number)[-2:])
     last_digit = int(str(number)[-1:])
-    if last_digit == 1:
+    if last_two == 11 or last_two == 12 or last_two == 13:
+        return "th"
+    elif last_digit == 1:
         return "st"
     elif last_digit == 2:
         return "nd"
